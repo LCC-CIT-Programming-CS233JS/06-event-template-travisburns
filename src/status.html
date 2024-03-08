@@ -8,30 +8,15 @@
 </head>
 <body>
 
-  <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
-    <div class="container-fluid">
-      <ul class="navbar-nav">
-        <li class="navbar-brand">Event Application</li>
-        <li class="nav-item">
-          <a class="nav-link" href="./">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="#">Status</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="./about.html">About</a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+  
 
   <div class="container">
     <h1 class="title">Interested People</h1>
     <div id="loadingIndicator">
       <p>Data loading...</p>
-      <image src="./assets/images/loading.gif" class="loading-indicator"></image>
+      <img src="./assets/images/loading.gif" class="loading-indicator"></img>
     </div>
-    <div id="loadingError" class="visually-hidden">
+    <div id="errorMessage" class="visually-hidden">
       <h3>Unable to load data...Try refreshing the page.</h3>
     </div>
     <ul class="nav nav-tabs visually-hidden" id="tabArea">
@@ -39,9 +24,11 @@
       <li role="presentation" class="nav-item"><a class="nav-link" href="" id="professionTab">Profession</a></li>
     </ul>
     <div class="chart-area hidden" id="chartArea">
-      <canvas id="experienceChart"></canvas>
-      <canvas id="professionChart"></canvas>
+      <canvas id="experienceCanvas"></canvas>
+      <canvas id="professionCanvas"></canvas>
     </div>
   </div>
+  <script src="../src/js/status.js"></script>
+  
 </body>
 </html>

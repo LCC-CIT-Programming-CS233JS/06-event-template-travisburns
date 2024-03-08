@@ -38,25 +38,33 @@ export default function validateRegistrationForm(formValues) {
 
 // must be longer than 3 chars.  Use a regular expression.
 function validateUserName(name) {
-  return true;
+  const pattern = /^[a-zA-Z]{3,}$/;
+  return pattern.test(name);
 }
 
 // must be a valid email address.  Use a regular expression
 function validateEmail(email) {
-  true;
+  const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return pattern.test(email);
+  
 }
 
 // must be a valid 10 digit phone number.  Use a regular expression
 function validatePhone(phone) {
-  return true;
+  const pattern = /^(\d{10}|\d{3}-\d{3}-\d{4}|\(\d{3}\) \d{3}-\d{4})$/;
+  return pattern.test(phone);
+ 
 }
 
 // must be either school, college, trainee or employee.  No reg exp.
 function validateProfession(profession) {
-  return true;
+  const validProfessions = ['school', 'college', 'trainee', 'employee'];
+  return validProfessions.includes(profession.toLowerCase());
+ 
 }
 
 // must be beginner, intermediate or advanced.  Use a regular expression.
 function validateExperience(experience) {
-  return true;
+  const pattern = /^(beginner|intermediate|advanced)$/i; // case-insensitive matching
+  return pattern.test(experience);
 }

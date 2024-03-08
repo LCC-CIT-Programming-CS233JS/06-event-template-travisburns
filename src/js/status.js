@@ -1,32 +1,39 @@
 // Notice the import statements
 import './general';
+import navbarTemplate from '../js/navigation';
 const regeneratorRuntime = require("regenerator-runtime");
 import { Chart, registerables } from 'chart.js';
 
 class Status {
   constructor() {
+    document.body.insertAdjacentHTML('afterbegin', navbarTemplate);
     Chart.register(...registerables);
-    /* Part 1 - Finish the constructor
-    - Add references to each of these elements on the page
-        this.$experienceTab = document.querySelector('#experienceTab');
-        this.$professionTab = 
-        this.$professionCanvas = 
-        this.$experienceCanvas = 
-        this.$loadingIndicator = 
-        this.$tabArea = 
-        this.$chartArea = 
-        this.$errorMessage = 
-    - Add an instance variables for the data that comes back from the service
-        this.allData;
-        this.professionData;
-        this.experienceData;
-    - Add instance variables for the chart objects themselves
+   
+    this.$experienceTab = document.querySelector('#experienceTab');
+    this.$professionTab = document.querySelector('#professionTab');
+    this.$professionCanvas = document.querySelector('#professionCanvas');
+    this.$experienceCanvas = document.querySelector('#experienceCanvas');
+    this.$loadingIndicator = document.querySelector('#loadingIndicator');
+    this.$tabArea = document.querySelector('#tabArea');
+    this.$chartArea = document.querySelector('#chartArea');
+    this.$errorMessage = document.querySelector('#errorMessage');
+    
+    
+    
+
+       this.allData;
+    this.professionData;
+    this.experienceData;
+
+
+   // - Add instance variables for the chart objects themselves
         this.experienceChart;
         this.professionChart;
         
-    - Call loadData.  It will make the ajax call and create one graph
-    - Call addEventListeners
-    */
+   // - Call loadData.  It will make the ajax call and create one graph
+   // - Call addEventListeners
+    this.loadData();
+    this.addEventListeners();
   }
  
   /* This method will take the raw data from the api - an array of participant objects and 
@@ -46,29 +53,42 @@ class Status {
 /* Part 2 - Write these 2 methods. 
    Instantiate an object at the bottom of the class.
    Then TEST.  The experience chart should work at this point. */
-  loadData() {
-    /* Make an api call using fecth. Because it's a get request with no data,
-       the only parameter is SERVER_URL.
-       When the Promise returns successfully, parse the response as json
-       When the json parse returns successfully, 
-          set allData to the data that's returned
-          set experienceData to the return from calling groupData with all of the data and 'experience' as parameters
-          set professionData to the return from calling groupData with all of the data and 'profession' as parameters
-          hide the loading indicator - add visually-hidden style
-          show the tab area and the chart area - remove visually-hidden style
-          call createExperienceChart
-          call createProfessionChart - it won't work yet but it will at the end of part 3
-          call showExperience - it's the default chart.  Eventually you'll call loadProfession too
-       When an error occurs
-          hide the loading indicator
-          show the error message
-      */
+   loadData() {
+    const SERVER_URL = 'http://citweb.lanecc.net:5000/participants' 
+  
+    fetch(SERVER_URL)
+      .then(response => response.json())
+      .then(data => {
+        this.allData = data;
+        this.experienceData = this.groupData(data, 'experience');
+        this.professionData = this.groupData(data, 'profession');
+  
+        // Hide loading indicator and show tab and chart areas
+        this.$loadingIndicator.classList.add('visually-hidden');
+        this.$tabArea.classList.remove('visually-hidden');
+        this.$chartArea.classList.remove('visually-hidden');
+  
+        // Create and show the experience chart
+        this.createExperienceChart();
+        this.showExperience();
+  
+        // Create the profession chart (Part 3 will complete this)
+        this.createProfessionChart();
+      })
+      .catch(error => {
+        // Handle error: hide loading indicator, show error message
+        this.$loadingIndicator.classList.add('visually-hidden');
+        this.$errorMessage.classList.remove('visually-hidden');
+        console.error('Error loading data:', error);
+      });
   }
 
-  addEventListeners() {
-    // add a click event handler to the experienceTab.  Call loadExperience.  Bind the class.
-    // add a click event handler to the professionTab...
-  }
+ addEventListeners() {
+  // add a click event handler to the experienceTab.  Call showExperience.
+  this.$experienceTab.addEventListener('click', this.showExperience.bind(this));
+  // add a click event handler to the professionTab. Call showProfession.
+  this.$professionTab.addEventListener('click', this.showProfession.bind(this));
+}
 
   hideCharts() {
     this.$experienceTab.classList.remove('active');
@@ -119,13 +139,45 @@ class Status {
   // It's just like the loadExperience but there are 4 'slices' for these chart labels.
   // 'School Students', 'College Students', 'Trainees', 'Employees'.  The properties in the grouped data are school, college, trainee, employee
   createProfessionChart() {
- 
+    console.log("Proffesion loaded")
+    const chartData = {
+      datasets: [{
+        data: [
+          this.professionData.school || 0,
+          this.professionData.college || 0,
+          this.professionData.trainee || 0,
+          this.professionData.employee || 0
+        ],
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.6)',
+          'rgba(54, 162, 235, 0.6)',
+          'rgba(255, 206, 86, 0.6)',
+          'rgba(75, 192, 192, 0.6)'
+        ],
+        borderColor: ['white', 'white', 'white', 'white'],
+        borderWidth: 1
+      }],
+      labels: ['School Students', 'College Students', 'Trainees', 'Employees']
+    };
+  
+    this.professionChart = new Chart(this.$professionCanvas, {
+      type: 'pie',
+      data: chartData,
+      options: {}
+    });
   }
   
   showProfession(event = null) {
-  
+    if (event) event.preventDefault();
+    this.hideCharts();
+    this.$professionCanvas.classList.remove('visually-hidden');
+    this.$professionTab.classList.add('active');
+    
   }
 
 }
 
 // add a window on load handler that creates a new instance of this class
+window.onload = function() {
+  new Status();
+};

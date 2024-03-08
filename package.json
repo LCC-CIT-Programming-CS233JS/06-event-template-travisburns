@@ -8,6 +8,8 @@
     "build": "webpack --config webpack.config.js",
     "watch": "webpack serve --open", 
     "apiServer": "json-server --watch data/db.json"
+
+    
   },
   "devDependencies": {
     "@babel/cli": "^7.18.10",
